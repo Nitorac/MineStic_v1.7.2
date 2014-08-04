@@ -34,7 +34,7 @@ tile.PlasticMachine.name=Extracteur de plastique
 entity.PlasticCow.name=Vache en plastique
 entity.PlasticPig.name=Cochon en plastique
 
-itemGroup.PlasticTab=MineStic
+itemGroup.PlasticTab1=MineStic
 
 achievement.plasticmine=C'est l'heure du plastique!
 achievement.plasticmine.desc=Obtenir de la poudre de plastique, puis vous n'avez plus qu'a le faire cuire ...

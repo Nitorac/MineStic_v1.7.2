@@ -1,10 +1,8 @@
 package nitorac.minestic.core;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockFence;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
@@ -19,7 +17,6 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-import nitorac.minestic.common.CreativeTab.PlasticTab;
 import nitorac.minestic.core.blocks_fluids.BlockCompPlastic;
 import nitorac.minestic.core.blocks_fluids.BlockDirtPlastic;
 import nitorac.minestic.core.blocks_fluids.BlockGrassPlastic;
@@ -31,18 +28,21 @@ import nitorac.minestic.core.blocks_fluids.BlockPlasticFluid;
 import nitorac.minestic.core.blocks_fluids.BlockPlasticLight;
 import nitorac.minestic.core.blocks_fluids.BlockPlasticLightOff;
 import nitorac.minestic.core.blocks_fluids.BlockPlasticStone;
+import nitorac.minestic.core.blocks_fluids.PlasticBlockFence;
 import nitorac.minestic.core.blocks_fluids.PlasticExtractor;
 import nitorac.minestic.core.blocks_fluids.PlasticFire;
 import nitorac.minestic.core.blocks_fluids.PlasticFlintAndSteel;
 import nitorac.minestic.core.blocks_fluids.PlasticPortal;
 import nitorac.minestic.core.blocks_fluids.PlasticSlabs;
 import nitorac.minestic.core.blocks_fluids.cakes.RottenCakeCuit;
+import nitorac.minestic.core.creative_tabs.PlasticTab1;
 import nitorac.minestic.core.entity.PEntities;
 import nitorac.minestic.core.events.BucketEvent;
 import nitorac.minestic.core.events.OnPlayerStartWorld;
 import nitorac.minestic.core.events.PickupPlasticEvent;
 import nitorac.minestic.core.events.SmeltPlasticEvent;
 import nitorac.minestic.core.handlers.FuelHandler;
+import nitorac.minestic.core.handlers.PGuiHandler;
 import nitorac.minestic.core.items.ItemBlockPlasticSlab;
 import nitorac.minestic.core.items.ItemPlasticBlock;
 import nitorac.minestic.core.items.ItemPlasticBucket;
@@ -63,6 +63,7 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 @Mod(modid = MineStic.modid, name = MineStic.name, version = MineStic.version, acceptedMinecraftVersions = "[1.7.2,)", canBeDeactivated = true)
@@ -72,7 +73,7 @@ public class MineStic
 	@SidedProxy(clientSide = "nitorac.minestic.core.proxy.ClientProxy", serverSide = "nitorac.minestic.core.proxy.ServeurProxy")
 	public static ServeurProxy proxy;
 
-	@Instance("MineStic")
+	@Instance("minestic")
 	public static MineStic modInstance;
 	
 	public static final String modid = "minestic";
@@ -98,10 +99,12 @@ public class MineStic
 	
 	public static int PlasticDimID = 29;
 	
+	public static int PlasticExtractorGui = 1;
+	
 	protected static final BiomeGenBase.Height High_Plateau = new BiomeGenBase.Height(-0.1F, 2.4F);
 	
 	// declaration des tables creatives
-	public static CreativeTabs PlasticTab = new PlasticTab("PlasticTab");
+	public static CreativeTabs PlasticTab1 = new PlasticTab1("PlasticTab1");
 	
 	@EventHandler
 	public void PreInit(FMLPreInitializationEvent event)
@@ -114,24 +117,24 @@ public class MineStic
 		proxy.registerRenderThings();
 
 		//Blocks
-		plasticGrass = new BlockGrassPlastic().setHardness(0.4F).setResistance(2.0F).setStepSound(Block.soundTypeGrass).setCreativeTab(PlasticTab).setBlockName("PlasticGrass").setBlockTextureName("minestic:plasticgrass");
-		plasticDirt = new BlockDirtPlastic().setHardness(0.3F).setResistance(1.0F).setStepSound(Block.soundTypeGrass).setCreativeTab(PlasticTab).setBlockName("PlasticDirt").setBlockTextureName("minestic:plasticdirt");
-		CompPlastic = new BlockCompPlastic().setHardness(1.0F).setResistance(5.0F).setStepSound(Block.soundTypeStone).setCreativeTab(PlasticTab).setBlockName("CompPlastic").setBlockTextureName("minestic:CompPlastic");
-		Plastic = new BlockPlastic().setHardness(1.0F).setResistance(5.0F).setStepSound(Block.soundTypeStone).setCreativeTab(PlasticTab).setBlockName("Plastic").setBlockTextureName("minestic:Plastic").setLightOpacity(2);
-		PlasticChaud = new BlockPlasticChaud().setHardness(1.0F).setResistance(5.0F).setStepSound(Block.soundTypeMetal).setCreativeTab(PlasticTab).setBlockName("PlasticChaud").setBlockTextureName("minestic:PlasticChaud").setLightOpacity(2).setLightLevel(12);
-		PlasticBlock = new BlockPlasticBlock().setHardness(2.0F).setResistance(10.0F).setStepSound(Block.soundTypeMetal).setBlockName("PlasticBlock").setCreativeTab(PlasticTab);
-		plasticStone = new BlockPlasticStone().setHardness(2.0F).setResistance(10.0F).setStepSound(Block.soundTypeMetal).setBlockName("PlasticStone").setCreativeTab(PlasticTab).setBlockTextureName("minestic:plasticstone");
-		PlasticFence = new BlockFence("minestic:PlasticChaud", Material.iron).setBlockName("PlasticFence").setCreativeTab(MineStic.PlasticTab);
+		plasticGrass = new BlockGrassPlastic().setHardness(0.4F).setResistance(2.0F).setStepSound(Block.soundTypeGrass).setCreativeTab(PlasticTab1).setBlockName("PlasticGrass").setBlockTextureName("minestic:plasticgrass");
+		plasticDirt = new BlockDirtPlastic().setHardness(0.3F).setResistance(1.0F).setStepSound(Block.soundTypeGrass).setCreativeTab(PlasticTab1).setBlockName("PlasticDirt").setBlockTextureName("minestic:plasticdirt");
+		CompPlastic = new BlockCompPlastic().setHardness(1.0F).setResistance(5.0F).setStepSound(Block.soundTypeStone).setCreativeTab(PlasticTab1).setBlockName("CompPlastic").setBlockTextureName("minestic:CompPlastic");
+		Plastic = new BlockPlastic().setHardness(1.0F).setResistance(5.0F).setStepSound(Block.soundTypeStone).setCreativeTab(PlasticTab1).setBlockName("Plastic").setBlockTextureName("minestic:Plastic").setLightOpacity(2);
+		PlasticChaud = new BlockPlasticChaud().setHardness(1.0F).setResistance(5.0F).setStepSound(Block.soundTypeMetal).setCreativeTab(PlasticTab1).setBlockName("PlasticChaud").setBlockTextureName("minestic:PlasticChaud").setLightOpacity(2).setLightLevel(12);
+		PlasticBlock = new BlockPlasticBlock().setHardness(2.0F).setResistance(10.0F).setStepSound(Block.soundTypeMetal).setBlockName("PlasticBlock").setCreativeTab(PlasticTab1);
+		plasticStone = new BlockPlasticStone().setHardness(2.0F).setResistance(10.0F).setStepSound(Block.soundTypeMetal).setBlockName("PlasticStone").setCreativeTab(PlasticTab1).setBlockTextureName("minestic:plasticstone");
+		PlasticFence = new PlasticBlockFence("minestic:PlasticChaud", Material.iron).setBlockName("PlasticFence").setCreativeTab(MineStic.PlasticTab1);
 		DoubleMineSlab = new PlasticSlabs(true, Material.rock).setHardness(2.0F).setResistance(10.0F).setStepSound(Block.soundTypeStone).setBlockName("DoubleMineSlab");
 		RottenCakeCuit = new RottenCakeCuit().setHardness(0.5F).setStepSound(Block.soundTypeCloth).setBlockName("RottenCake");
 		MineSlab = new PlasticSlabs(false, Material.rock).setHardness(2.0F).setResistance(10.0F).setStepSound(Block.soundTypeStone).setBlockName("MineSlab");
-		Plastic_Lamp = new BlockPlasticLightOff(false).setHardness(0.3F).setStepSound(Block.soundTypeGlass).setBlockName("plasticLight_off").setCreativeTab(MineStic.PlasticTab).setBlockTextureName("minestic:plastic_lamp_off");
+		Plastic_Lamp = new BlockPlasticLightOff(false).setHardness(0.3F).setStepSound(Block.soundTypeGlass).setBlockName("plasticLight_off").setCreativeTab(MineStic.PlasticTab1).setBlockTextureName("minestic:plastic_lamp_off");
 		Plastic_Lamp_light = new BlockPlasticLight(true).setHardness(0.3F).setStepSound(Block.soundTypeGlass).setBlockName("plasticLight_on").setBlockTextureName("minestic:plastic_lamp_on");
 		plasticPortal = new PlasticPortal().setBlockName("plasticPortal");
 		plasticFire = new PlasticFire().setBlockName("PlasticFire").setBlockTextureName("minestic:black_fire").setLightLevel(1.0F);
-		PlasticExtractor = new PlasticExtractor().setBlockName("PlasticMachine").setCreativeTab(PlasticTab);
+		PlasticExtractor = new PlasticExtractor().setBlockName("PlasticExtractor").setCreativeTab(PlasticTab1);
 		PlasticFluidBlock = new BlockPlasticFluid(PlasticFluid, Material.lava).setBlockName("PlasticFluidBlock");
-		plasticCoal_ore = new BlockPlasticCoalOre().setHardness(6.0F).setResistance(5.0F).setStepSound(Block.soundTypeStone).setCreativeTab(PlasticTab).setBlockName("PlasticCoalOre").setBlockTextureName("minestic:PlasticCoalOre");
+		plasticCoal_ore = new BlockPlasticCoalOre().setHardness(6.0F).setResistance(5.0F).setStepSound(Block.soundTypeStone).setCreativeTab(PlasticTab1).setBlockName("PlasticCoalOre").setBlockTextureName("minestic:PlasticCoalOre");
 
 		GameRegistry.registerBlock(Plastic, Plastic.getUnlocalizedName());
 		GameRegistry.registerBlock(PlasticChaud, PlasticChaud.getUnlocalizedName());
@@ -157,15 +160,15 @@ public class MineStic
 		DimensionManager.registerDimension(PlasticDimID, PlasticDimID);
 		
 		//Items
-		PlasticDust = new ItemPlasticDust().setUnlocalizedName("PlasticDust").setTextureName("minestic:PlasticDust").setCreativeTab(PlasticTab);
-		RottenCuite = new ItemFood(6, 0.6F, false).setUnlocalizedName("RottenCuite").setTextureName("minestic:RottenCuite").setCreativeTab(PlasticTab);
-		PlasticIngot = new ItemPlasticIngot().setUnlocalizedName("PlasticIngot").setTextureName("minestic:PlasticIngot").setCreativeTab(PlasticTab);
-		PlasticMediKit = new ItemPlasticMediKit().setUnlocalizedName("PlasticMediKit").setTextureName("minestic:PlasticMediKit").setCreativeTab(PlasticTab);
+		PlasticDust = new ItemPlasticDust().setUnlocalizedName("PlasticDust").setTextureName("minestic:PlasticDust").setCreativeTab(PlasticTab1);
+		RottenCuite = new ItemFood(6, 0.6F, false).setUnlocalizedName("RottenCuite").setTextureName("minestic:RottenCuite").setCreativeTab(PlasticTab1);
+		PlasticIngot = new ItemPlasticIngot().setUnlocalizedName("PlasticIngot").setTextureName("minestic:PlasticIngot").setCreativeTab(PlasticTab1);
+		PlasticMediKit = new ItemPlasticMediKit().setUnlocalizedName("PlasticMediKit").setTextureName("minestic:PlasticMediKit").setCreativeTab(PlasticTab1);
 		ItemRottenCake = new ItemRottenCake().setUnlocalizedName("RottenCakeItem").setTextureName("minestic:RottenCake");
-		PlasticCoal = new Item().setUnlocalizedName("PlasticCoal").setTextureName("minestic:PlasticCoal").setCreativeTab(PlasticTab);
-		PlasticFlintAndSteel = new PlasticFlintAndSteel().setUnlocalizedName("PlasticFlintAndSteel").setTextureName("minestic:PlasticFlintAndSteel").setCreativeTab(PlasticTab);
-		PlasticBucket = new ItemPlasticBucket(PlasticFluidBlock).setUnlocalizedName("PlasticBucket").setTextureName("minestic:PlasticBucket").setCreativeTab(PlasticTab).setContainerItem(Items.bucket);
-		PlasticSpeed = new ItemPlasticSpeed().setUnlocalizedName("PlasticSpeed").setTextureName("minestic:PlasticSpeed").setCreativeTab(PlasticTab);
+		PlasticCoal = new Item().setUnlocalizedName("PlasticCoal").setTextureName("minestic:PlasticCoal").setCreativeTab(PlasticTab1);
+		PlasticFlintAndSteel = new PlasticFlintAndSteel().setUnlocalizedName("PlasticFlintAndSteel").setTextureName("minestic:PlasticFlintAndSteel").setCreativeTab(PlasticTab1);
+		PlasticBucket = new ItemPlasticBucket(PlasticFluidBlock).setUnlocalizedName("PlasticBucket").setTextureName("minestic:PlasticBucket").setCreativeTab(PlasticTab1).setContainerItem(Items.bucket);
+		PlasticSpeed = new ItemPlasticSpeed().setUnlocalizedName("PlasticSpeed").setTextureName("minestic:PlasticSpeed").setCreativeTab(PlasticTab1);
 		
 		GameRegistry.registerItem(PlasticDust, PlasticDust.getUnlocalizedName(), "minestic");
 		GameRegistry.registerItem(RottenCuite, RottenCuite.getUnlocalizedName(), "minestic");
@@ -183,7 +186,8 @@ public class MineStic
 		BiomeManager.addSpawnBiome(plasticBiome);
         BiomeDictionary.registerBiomeType(plasticBiome, Type.MAGICAL);
         BiomeManager.addSpawnBiome(plasticBiome);
-       
+        
+        PGuiHandler PGuiHandler = new PGuiHandler();
 	}
 
 	@EventHandler
@@ -195,10 +199,13 @@ public class MineStic
 		
 		GameRegistry.registerWorldGenerator(new PlasticGen(), 1);
 		
+		NetworkRegistry.INSTANCE.registerGuiHandler(this, new PGuiHandler());
+		
 		GameRegistry.addSmelting(MineStic.PlasticDust, new ItemStack(MineStic.PlasticIngot), 15.0F);
 		GameRegistry.addSmelting(Items.rotten_flesh, new ItemStack(MineStic.RottenCuite), 5.0F);
 		
 		GameRegistry.registerFuelHandler(new FuelHandler());
+		
 		
 		FMLCommonHandler.instance().bus().register(new PickupPlasticEvent());
 		FMLCommonHandler.instance().bus().register(new SmeltPlasticEvent());

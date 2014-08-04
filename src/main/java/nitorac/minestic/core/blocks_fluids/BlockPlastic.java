@@ -18,7 +18,7 @@ public class BlockPlastic extends Block {
 	public BlockPlastic() 
 	{
 		super(Material.rock);
-		this.setCreativeTab(MineStic.PlasticTab);
+		this.setCreativeTab(MineStic.PlasticTab1);
 		this.setTickRandomly(true);
 		this.setHarvestLevel("pickaxe", 1, 0);
 	}

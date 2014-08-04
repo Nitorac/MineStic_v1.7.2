@@ -34,7 +34,7 @@ tile.PlasticMachine.name=Plastic Extractor
 entity.PlasticCow.name=Plastic Cow
 entity.PlasticPig.name=Plastic Pig
 
-itemGroup.PlasticTab=MineStic
+itemGroup.PlasticTab1=MineStic
 
 achievement.plasticmine=It's time for Plastic
 achievement.plasticmine.desc=Get the plastic dust, then you simply have to bake it...

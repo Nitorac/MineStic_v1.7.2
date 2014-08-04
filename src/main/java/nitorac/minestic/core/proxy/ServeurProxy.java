@@ -1,6 +1,9 @@
 package nitorac.minestic.core.proxy;
 
+import nitorac.minestic.core.MineStic;
+import nitorac.minestic.core.handlers.PGuiHandler;
 import nitorac.minestic.core.tileentity.TileEntityPlasticExtractor;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ServeurProxy

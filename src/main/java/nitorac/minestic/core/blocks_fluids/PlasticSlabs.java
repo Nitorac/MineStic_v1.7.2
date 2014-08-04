@@ -23,7 +23,7 @@ public class PlasticSlabs extends BlockSlab
 	public PlasticSlabs(boolean isdouble, Material material)
 	{
 		super(isdouble, material);
-		this.setCreativeTab(MineStic.PlasticTab);
+		this.setCreativeTab(MineStic.PlasticTab1);
 		if(!this.field_150004_a)
 		{
 			this.setLightOpacity(0);

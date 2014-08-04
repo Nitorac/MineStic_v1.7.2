@@ -43,6 +43,20 @@ public class BlockPlasticChaud extends Block {
 	
 	public void updateTick(World worldObj, int x, int y, int z, Random random)
     {
+		if (worldObj.getSavedLightValue(EnumSkyBlock.Block, x, y, z) > 11 - this.getLightOpacity())
+        {
+        	if (worldObj.provider.dimensionId == 1)
+        	{
+        		worldObj.setBlock(x, y, z, MineStic.Plastic);
+                return;
+        	}
+        	if (worldObj.provider.isHellWorld)
+            {
+                worldObj.setBlock(x, y, z, MineStic.Plastic);
+                return;
+            }
+            worldObj.setBlock(x, y, z, MineStic.Plastic);
+        }
 		if (worldObj.getBlock(x, y + 1, z) == Blocks.water || worldObj.getBlock(x, y + 1, z) == Blocks.flowing_water || 
             	worldObj.getBlock(x + 1, y, z) == Blocks.water || worldObj.getBlock(x + 1, y, z) == Blocks.flowing_water || 
             	worldObj.getBlock(x - 1, y, z) == Blocks.water || worldObj.getBlock(x - 1, y, z) == Blocks.flowing_water || 

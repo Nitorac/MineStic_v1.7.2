@@ -16,7 +16,7 @@ public class ItemRottenCake extends Item
 	
     public ItemRottenCake()
     {
-        this.setCreativeTab(MineStic.PlasticTab);
+        this.setCreativeTab(MineStic.PlasticTab1);
     }
     
     public boolean onItemUse(ItemStack ItemStack, EntityPlayer entityplayer, World world, int x, int y, int z, int par7, float hitX, float hitY, float hitZ)
